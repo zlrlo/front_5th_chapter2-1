@@ -158,48 +158,44 @@ function main() {
     const target = event.target;
 
     if (
-      target.classList.contains("quantity-change") ||
-      target.classList.contains("remove-item")
-    ) {
-      const productId = target.dataset.productId;
-      const itemNode = document.getElementById(productId);
-      const product = productList.find(function (p) {
-        return p.id === productId;
-      });
-      if (target.classList.contains("quantity-change")) {
-        const quantity = parseInt(target.dataset.change);
-        const newQuantity =
-          parseInt(itemNode.querySelector("span").textContent.split("x ")[1]) +
-          quantity;
+      !target.classList.contains("quantity-change") &&
+      !target.classList.contains("remove-item")
+    )
+      return;
 
-        if (
-          newQuantity > 0 &&
-          newQuantity <=
-            product.quantity +
-              parseInt(
-                itemNode.querySelector("span").textContent.split("x ")[1],
-              )
-        ) {
-          itemNode.querySelector("span").textContent =
-            itemNode.querySelector("span").textContent.split("x ")[0] +
-            "x " +
-            newQuantity;
-          product.quantity -= quantity;
-        } else if (newQuantity <= 0) {
-          itemNode.remove();
-          product.quantity -= quantity;
-        } else {
-          alert("재고가 부족합니다.");
-        }
-      } else if (target.classList.contains("remove-item")) {
-        const remQty = parseInt(
-          itemNode.querySelector("span").textContent.split("x ")[1],
-        );
-        product.quantity += remQty;
+    const curProductId = target.dataset.productId;
+    const itemNode = document.getElementById(curProductId);
+    const curProduct = productList.find(
+      (product) => product.id === curProductId,
+    );
+    const curQuantity = parseInt(
+      itemNode.querySelector("span").textContent.split("x ")[1],
+    );
+
+    if (target.classList.contains("quantity-change")) {
+      const quantityOffset = parseInt(target.dataset.change);
+
+      const nextQuantity = curQuantity + quantityOffset;
+
+      const isQuantityInRange =
+        nextQuantity > 0 && nextQuantity <= curProduct.quantity + curQuantity;
+
+      if (isQuantityInRange) {
+        itemNode.querySelector("span").textContent =
+          `${curProduct.name} - ${curProduct.value}원 x ${nextQuantity}`;
+
+        curProduct.quantity -= quantityOffset;
+      } else if (nextQuantity <= 0) {
         itemNode.remove();
+        curProduct.quantity -= quantityOffset;
+      } else {
+        alert("재고가 부족합니다.");
       }
-      calculateCart();
+    } else if (target.classList.contains("remove-item")) {
+      curProduct.quantity += curQuantity;
+      itemNode.remove();
     }
+    calculateCart();
   });
 }
 
