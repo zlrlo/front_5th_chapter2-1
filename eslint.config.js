@@ -29,6 +29,7 @@ export default defineConfig([
     },
     rules: {
       "prettier/prettier": "warn",
+      "prefer-const": "warn",
     },
   },
   // TypeScript 기본 룰
