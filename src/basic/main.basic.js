@@ -11,6 +11,7 @@ function main() {
     { id: "p4", name: "상품4", val: 15000, q: 0 },
     { id: "p5", name: "상품5", val: 25000, q: 10 },
   ];
+
   const root = document.getElementById("app");
   const cont = document.createElement("div");
   const wrap = document.createElement("div");
@@ -20,6 +21,7 @@ function main() {
   const sel = document.createElement("select");
   const addBtn = document.createElement("button");
   const stockInfo = document.createElement("div");
+
   cartDisp.id = "cart-items";
   sum.id = "cart-total";
   sel.id = "product-select";
@@ -35,7 +37,9 @@ function main() {
   stockInfo.className = "text-sm text-gray-500 mt-2";
   hTxt.textContent = "장바구니";
   addBtn.textContent = "추가";
+
   updateSelOpts();
+
   wrap.appendChild(hTxt);
   wrap.appendChild(cartDisp);
   wrap.appendChild(sum);
@@ -44,7 +48,9 @@ function main() {
   wrap.appendChild(stockInfo);
   cont.appendChild(wrap);
   root.appendChild(cont);
+
   calcCart();
+
   setTimeout(function () {
     setInterval(function () {
       const luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
@@ -55,6 +61,7 @@ function main() {
       }
     }, 30000);
   }, Math.random() * 10000);
+
   setTimeout(function () {
     setInterval(function () {
       if (lastSel) {
@@ -77,11 +84,12 @@ function main() {
     prodList.forEach(function (item) {
       const opt = document.createElement("option");
       opt.value = item.id;
-      opt.textContent = item.name + " - " + item.val + "원";
+      opt.textContent = `${item.name} - ${item.val}원`;
       if (item.q === 0) opt.disabled = true;
       sel.appendChild(opt);
     });
   }
+
   function calcCart() {
     totalAmt = 0;
     itemCnt = 0;
@@ -150,17 +158,13 @@ function main() {
       ptsTag.className = "text-blue-500 ml-2";
       sum.appendChild(ptsTag);
     }
-    ptsTag.textContent = "(포인트: " + bonusPts + ")";
+    ptsTag.textContent = `(포인트: ${bonusPts})`;
   }
   function updateStockInfo() {
     let infoMsg = "";
     prodList.forEach(function (item) {
       if (item.q < 5) {
-        infoMsg +=
-          item.name +
-          ": " +
-          (item.q > 0 ? "재고 부족 (" + item.q + "개 남음)" : "품절") +
-          "\n";
+        infoMsg += `${item.name}: ${item.q > 0 ? `재고 부족 (${item.q}개 남음)` : "품절"}\n`;
       }
     });
     stockInfo.textContent = infoMsg;
@@ -178,7 +182,7 @@ function main() {
           parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
         if (newQty <= itemToAdd.q) {
           item.querySelector("span").textContent =
-            itemToAdd.name + " - " + itemToAdd.val + "원 x " + newQty;
+            `${itemToAdd.name} - ${itemToAdd.val}원 x ${newQty}`;
           itemToAdd.q--;
         } else {
           alert("재고가 부족합니다.");
@@ -187,21 +191,13 @@ function main() {
         const newItem = document.createElement("div");
         newItem.id = itemToAdd.id;
         newItem.className = "flex justify-between items-center mb-2";
-        newItem.innerHTML =
-          "<span>" +
-          itemToAdd.name +
-          " - " +
-          itemToAdd.val +
-          "원 x 1</span><div>" +
-          '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-          itemToAdd.id +
-          '" data-change="-1">-</button>' +
-          '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-          itemToAdd.id +
-          '" data-change="1">+</button>' +
-          '<button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="' +
-          itemToAdd.id +
-          '">삭제</button></div>';
+        newItem.innerHTML = `
+          <span>${itemToAdd.name} - ${itemToAdd.val}원 x 1</span>
+          <div>
+            <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="-1">-</button>
+            <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="1">+</button>
+            <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${itemToAdd.id}">삭제</button>`;
+
         cartDisp.appendChild(newItem);
         itemToAdd.q--;
       }
@@ -209,6 +205,7 @@ function main() {
       lastSel = selItem;
     }
   });
+
   cartDisp.addEventListener("click", function (event) {
     const tgt = event.target;
     if (
