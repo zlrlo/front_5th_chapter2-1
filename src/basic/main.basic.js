@@ -14,14 +14,14 @@ const productList = [
 
 let totalAmount = 0;
 let lastSelected;
+const cartItems = [];
 
 function main() {
   renderLayout();
-
   renderSelectOptions();
+  renderStockInfo();
 
   calculateCart();
-  renderStockInfo();
   renderBonusPoints();
 
   setTimeout(function () {
@@ -65,29 +65,37 @@ main();
 
 function renderLayout() {
   const rootNode = document.getElementById("app");
-  const containerNode = document.createElement("div");
-  const wrapNode = document.createElement("div");
-  const titleNode = document.createElement("h1");
-  const cartDisplayNode = document.createElement("div");
-  const sumNode = document.createElement("div");
-  const selectNode = document.createElement("select");
-  const addButtonNode = document.createElement("button");
-  const stockInfoNode = document.createElement("div");
 
-  cartDisplayNode.id = "cart-items";
-  sumNode.id = "cart-total";
-  selectNode.id = "product-select";
-  addButtonNode.id = "add-to-cart";
-  stockInfoNode.id = "stock-status";
+  const containerNode = document.createElement("div");
   containerNode.className = "bg-gray-100 p-8";
+
+  const wrapNode = document.createElement("div");
   wrapNode.className =
     "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
+
+  const titleNode = document.createElement("h1");
   titleNode.className = "text-2xl font-bold mb-4";
+  titleNode.textContent = "장바구니";
+
+  const cartDisplayNode = document.createElement("div");
+  cartDisplayNode.id = "cart-items";
+
+  const sumNode = document.createElement("div");
+  sumNode.id = "cart-total";
+
+  const selectNode = document.createElement("select");
+  selectNode.id = "product-select";
+
+  const addButtonNode = document.createElement("button");
+  addButtonNode.id = "add-to-cart";
+
+  const stockInfoNode = document.createElement("div");
+  stockInfoNode.id = "stock-status";
+
   sumNode.className = "text-xl font-bold my-4";
   selectNode.className = "border rounded p-2 mr-2";
   addButtonNode.className = "bg-blue-500 text-white px-4 py-2 rounded";
   stockInfoNode.className = "text-sm text-gray-500 mt-2";
-  titleNode.textContent = "장바구니";
   addButtonNode.textContent = "추가";
 
   wrapNode.appendChild(titleNode);
