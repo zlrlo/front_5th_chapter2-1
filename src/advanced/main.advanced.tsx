@@ -38,6 +38,16 @@ function App() {
     [totalAmount],
   );
 
+  const updateProductQuantity = ({ quantityOffset, targetProduct }) => {
+    setProductList((prev) =>
+      prev.map((product) =>
+        product.id === targetProduct.id
+          ? { ...product, quantity: product.quantity + quantityOffset }
+          : product,
+      ),
+    );
+  };
+
   const handleAddButtonClick = () => {
     const selectedProduct = getSelectedProduct({
       productList,
@@ -51,16 +61,6 @@ function App() {
 
       const nextQuantity = item ? item.quantity + 1 : 1;
 
-      const updateProductQuantity = () => {
-        setProductList((prev) =>
-          prev.map((product) =>
-            product.id === selectedProduct.id
-              ? { ...product, quantity: product.quantity - 1 }
-              : product,
-          ),
-        );
-      };
-
       const updateCartItem = () => {
         setCartItems((prev) =>
           prev.map((cartItem) =>
@@ -70,7 +70,10 @@ function App() {
           ),
         );
 
-        updateProductQuantity();
+        updateProductQuantity({
+          quantityOffset: -1,
+          targetProduct: selectedProduct,
+        });
       };
 
       const addToCart = () => {
@@ -79,7 +82,10 @@ function App() {
           { product: selectedProduct, quantity: nextQuantity },
         ]);
 
-        updateProductQuantity();
+        updateProductQuantity({
+          quantityOffset: -1,
+          targetProduct: selectedProduct,
+        });
       };
 
       onAddButtonClick({
@@ -88,6 +94,17 @@ function App() {
         updateCartItems: item ? updateCartItem : addToCart,
       });
     }
+  };
+
+  const handleRemoveButtonClick = (product: Product) => {
+    setCartItems((prev) =>
+      prev.filter((cartItem) => cartItem.product.id !== product.id),
+    );
+
+    updateProductQuantity({
+      quantityOffset: product.quantity,
+      targetProduct: product,
+    });
   };
 
   return (
@@ -108,6 +125,7 @@ function App() {
                   className="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1"
                   data-product-id={cartItem.product.id}
                   data-change="-1"
+                  onClick={() => {}}
                 >
                   -
                 </button>
@@ -121,6 +139,7 @@ function App() {
                 <button
                   className="remove-item bg-red-500 text-white px-2 py-1 rounded"
                   data-product-id={cartItem.product.id}
+                  onClick={() => handleRemoveButtonClick(cartItem.product)}
                 >
                   삭제
                 </button>
