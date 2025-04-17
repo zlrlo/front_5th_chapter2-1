@@ -1,3 +1,5 @@
+import { getSelectedProduct, hasProductStock } from "../shared";
+
 import {
   BULK_DISCOUNT_THRESHOLD,
   BULK_DISCOUNT_RATE,
@@ -55,7 +57,34 @@ function main() {
   }, Math.random() * 20000);
 
   const addButtonNode = document.getElementById("add-to-cart");
-  addButtonNode.addEventListener("click", handleAddButtonClick);
+  addButtonNode.addEventListener("click", function () {
+    const selectNode = document.getElementById("product-select");
+    const selectedItemId = selectNode.value;
+    const selectedProduct = getSelectedProduct({
+      productList,
+      selectedItemId,
+    });
+
+    if (hasProductStock(selectedProduct)) {
+      const item = document.getElementById(selectedProduct.id);
+
+      if (item) {
+        const nextQuantity =
+          parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
+
+        onAddButtonClick({
+          selectedProduct,
+          nextQuantity,
+          updateCartItems,
+        });
+      } else renderNewItem({ selectedProduct });
+
+      calculateCart();
+      renderStockInfo();
+      renderBonusPoints();
+      lastSelected = selectedProduct.id;
+    }
+  });
 
   const cartDisplayNode = document.getElementById("cart-items");
   cartDisplayNode.addEventListener("click", handleCartDisplayClick);
@@ -141,7 +170,8 @@ function renderNewItem({ selectedProduct }) {
     <div>
       <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${selectedProduct.id}" data-change="-1">-</button>
       <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${selectedProduct.id}" data-change="1">+</button>
-      <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${selectedProduct.id}">삭제</button>`;
+      <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${selectedProduct.id}">삭제</button>
+    </div>`;
   cartDisplayNode.appendChild(newItem);
   selectedProduct.quantity--;
 }
@@ -214,32 +244,23 @@ function calculateCart() {
   }
 }
 
-function handleAddButtonClick() {
-  const selectNode = document.getElementById("product-select");
-  const selectedItem = selectNode.value;
-  const selectedProduct = productList.find(function (product) {
-    return product.id === selectedItem;
-  });
-  if (selectedProduct && selectedProduct.quantity > 0) {
-    const item = document.getElementById(selectedProduct.id);
-    if (item) {
-      const newQty =
-        parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
-      if (newQty <= selectedProduct.quantity) {
-        item.querySelector("span").textContent =
-          `${selectedProduct.name} - ${selectedProduct.value}원 x ${newQty}`;
-        selectedProduct.quantity--;
-      } else {
-        alert("재고가 부족합니다.");
-      }
-    } else {
-      renderNewItem({ selectedProduct });
-    }
-    calculateCart();
-    renderStockInfo();
-    renderBonusPoints();
-    lastSelected = selectedItem;
+export function onAddButtonClick({
+  selectedProduct,
+  nextQuantity,
+  updateCartItems,
+}) {
+  if (nextQuantity <= selectedProduct.quantity) {
+    updateCartItems({ selectedProduct, nextQuantity });
+  } else {
+    alert("재고가 부족합니다.");
   }
+}
+
+function updateCartItems({ selectedProduct, nextQuantity }) {
+  const item = document.getElementById(selectedProduct.id);
+  item.querySelector("span").textContent =
+    `${selectedProduct.name} - ${selectedProduct.value}원 x ${nextQuantity}`;
+  selectedProduct.quantity--;
 }
 
 function handleCartDisplayClick(event) {
