@@ -27,8 +27,6 @@ function App() {
 
   const [totalAmount, setTotalAmount] = useState(0);
 
-  const [lastSelected, setLastSelected] = useState(null);
-
   const [cartItems, setCartItems] = useState<
     { product: Product; quantity: number }[]
   >([]);

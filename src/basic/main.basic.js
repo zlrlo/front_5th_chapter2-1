@@ -20,7 +20,6 @@ const productList = [
 
 let totalAmount = 0;
 let lastSelected;
-const cartItems = [];
 
 function main() {
   renderLayout();
