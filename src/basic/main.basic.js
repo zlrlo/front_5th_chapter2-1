@@ -1,4 +1,8 @@
-import { getSelectedProduct, hasProductStock } from "../shared";
+import {
+  getSelectedProduct,
+  hasProductStock,
+  isQuantityInRange,
+} from "../shared";
 
 import {
   BULK_DISCOUNT_THRESHOLD,
@@ -284,10 +288,13 @@ function handleCartDisplayClick(event) {
 
     const nextQuantity = curQuantity + quantityOffset;
 
-    const isQuantityInRange =
-      nextQuantity > 0 && nextQuantity <= curProduct.quantity + curQuantity;
-
-    if (isQuantityInRange) {
+    if (
+      isQuantityInRange({
+        curQuantity,
+        quantityOffset,
+        productQuantity: curProduct.quantity,
+      })
+    ) {
       itemNode.querySelector("span").textContent =
         `${curProduct.name} - ${curProduct.value}원 x ${nextQuantity}`;
 

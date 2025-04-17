@@ -4,7 +4,11 @@ import ReactDOM from "react-dom/client";
 import { Product } from "../entities";
 import { useMemo } from "react";
 import { onAddButtonClick } from "../basic/main.basic";
-import { getSelectedProduct, hasProductStock } from "../shared";
+import {
+  getSelectedProduct,
+  hasProductStock,
+  isQuantityInRange,
+} from "../shared";
 
 ReactDOM.createRoot(document.getElementById("app")!).render(
   <React.StrictMode>
@@ -107,6 +111,31 @@ function App() {
     });
   };
 
+  const addQuantity = ({ curQuantity, targetProduct }) => {
+    const quantityOffset = 1;
+
+    if (
+      isQuantityInRange({
+        curQuantity,
+        quantityOffset,
+        productQuantity: targetProduct.quantity,
+      })
+    ) {
+      setCartItems((prev) =>
+        prev.map((cartItem) =>
+          cartItem.product.id === targetProduct.id
+            ? { ...cartItem, quantity: curQuantity + quantityOffset }
+            : cartItem,
+        ),
+      );
+
+      updateProductQuantity({
+        quantityOffset: -quantityOffset,
+        targetProduct,
+      });
+    }
+  };
+
   return (
     <div className="bg-gray-100 p-8">
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
@@ -118,7 +147,8 @@ function App() {
               className="flex justify-between items-center mb-2"
             >
               <span>
-                ${cartItem.product.name} - ${cartItem.product.value}원 x 1
+                ${cartItem.product.name} - ${cartItem.product.value}원 x
+                {cartItem.quantity}
               </span>
               <div>
                 <button
@@ -133,6 +163,12 @@ function App() {
                   className="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1"
                   data-product-id={cartItem.product.id}
                   data-change="1"
+                  onClick={() =>
+                    addQuantity({
+                      curQuantity: cartItem.quantity,
+                      targetProduct: cartItem.product,
+                    })
+                  }
                 >
                   +
                 </button>
